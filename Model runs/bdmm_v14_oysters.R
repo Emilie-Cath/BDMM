@@ -57,7 +57,7 @@ bdmm_data <- list(
   t_sd =  sd(t_obs)
 )
 
-bdmm <- cmdstan_model("bdmm_v14_Emi_version.stan", force_recompile = TRUE)
+bdmm <- cmdstan_model("bdmm_distribs_lambda.stan", force_recompile = TRUE)
 bdmm_fitted <- bdmm$sample(
   data = bdmm_data,
   seed = 102,
@@ -259,4 +259,5 @@ mtext(expression(paste(" δ"^{13},"C (‰)")),side=1,line=-2,cex=1.5,font=2)
 legend("center",legend=c("MPBxU","POM","TOM","Consumer"),cex=1.5,col=c(color_main[1:3],"black")
        ,lty=c(1,1,1,NA),box.lty=0,pch=c(NA,NA,NA,16))
 dev.off()
+
 
