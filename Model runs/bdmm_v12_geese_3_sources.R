@@ -63,7 +63,7 @@ bdmm_data <- list(
   t_sd =  sd(t_obs)
 )
 
-bdmm <- cmdstan_model("bdmm_distribs_lambda.stan", force_recompile = TRUE)
+bdmm <- cmdstan_model("bdmm_one_distrib_lambda.stan", force_recompile = TRUE)
 # bdmm_fitted <- bdmm$sample(
 #   data = bdmm_data,
 #   seed = 102,
@@ -280,3 +280,4 @@ points(conso_n$time,conso_n$`mean_2]`,pch=16,col="grey40",cex=1.5)
 points(geese_dat$Time,geese_dat$d15N_Pl,pch=16,col="red")
 
 dev.off()
+
