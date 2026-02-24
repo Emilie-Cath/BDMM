@@ -41,8 +41,8 @@ X=11 #Number of sols kept by the model here 5%
 lambda=0.02
 sd_lambda_syst=0.001
 #lambda param
-lambda_data=0.2
-sd_lambda_data=0.1
+lambda_data=0.002
+sd_lambda_data=0.001
 
 liste_lambda=list(data.frame(Date=t,l=rep(lambda,period+2)),data.frame(Date=t,l=rep(lambda,period+2)))
 #WARNING IF T IS TOO SHORT COMPARED TO LAMBDA
@@ -452,6 +452,9 @@ t_obs <- sort(jitter(noise_consumer_C$Time+0.01 / 1, amount = 0.01))
 y_obs <- cbind(noise_consumer_C$Conso, noise_consumer_N$Conso) # ADD NOISE HERE
 t_fit <- t_obs
 bdmm_data <- list(
+  rel_tol = 1e-4,
+  abs_tol = 1e-4,
+  max_num_steps = 100000,
   n_obs = length(t_obs),
   n_fit = length(t_fit),
   K = ncol(mean_sources_C),
@@ -472,15 +475,21 @@ bdmm_data <- list(
   t_sd =  sd(t_obs)
 )
 
-bdmm <- cmdstan_model("bdmm_v12_Emi_version.stan", force_recompile = TRUE)
+bdmm <- cmdstan_model("bdmm_v18.stan", force_recompile = TRUE)
+
 
 bdmm_fitted <- bdmm$sample(
   data = bdmm_data,
   seed = 102,
   chains = 4,
   parallel_chains = 4,
-  refresh = 100
+  iter_sampling = 1000,
+  iter_warmup = 200,
+  refresh = 100,
+  adapt_delta = 0.8, # keep this high for stability
+  max_treedepth = 10
 )
+
   
 
 # Now generate predictions
@@ -661,7 +670,7 @@ dens_syst<-density(syst)
 cols<-c("orange","skyblue","black")
 
 for (i in 1:ncol(lambda_fitted)){
-  # i=1
+   i=1
   title_graph<-paste0("dens_graph_l_",lambda_data,"_large_distrib","_",i,".tiff")
   dens_post<-density(lambda_fitted[[i]])
   # y_max=max(dens_syst[[2]],dens_prior[[2]],dens_post[[2]])
